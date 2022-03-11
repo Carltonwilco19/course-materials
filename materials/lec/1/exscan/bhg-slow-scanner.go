@@ -16,10 +16,10 @@ import (
 )
 
 func main() {
-	fmt.Printf("port, status\n")  // adding output - csv format
+	fmt.Printf("port, status\n")  // adding output - csv format (csv: comma separated values)
 	for i := 1; i <= 1024; i++ {
 		address := fmt.Sprintf("scanme.nmap.org:%d", i)
-		conn, err := net.DialTimeout("tcp", address, 1 * time.Second ) // DRMIKE: using DialTimeout over Dial (one extra parameter!); consider < 1 Second
+		conn, err := net.DialTimeout("tcp", address, 500 * time.Millisecond ) // DRMIKE: using DialTimeout over Dial (one extra parameter!); consider < 1 Second
 		if err != nil {
 			fmt.Printf("%d, closed/filtered\n", i)  // adding output - csv format
 			continue

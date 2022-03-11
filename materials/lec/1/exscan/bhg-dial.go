@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	_, err := net.Dial("tcp", "scanme.nmap.org:80")
+	_, err := net.Dial("tcp", "scanme.nmap.org:2302")
 	if err == nil {
 		fmt.Println("Connection successful")
 	}

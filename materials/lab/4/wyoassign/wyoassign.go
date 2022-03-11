@@ -19,6 +19,8 @@ type Assignment struct {
 	Title string `json:"title`
 	Description string `json:"desc"`
 	Points int `json:"points"`
+	//add due date here for modify/update
+	// actual time format will cause pain lol
 }
 
 var Assignments []Assignment
@@ -38,6 +40,16 @@ func APISTATUS(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "API is up and running")
 }
+
+func MainPage(w http.ResponseWriter, r *http.Request){
+	log.Printf("Entering %s end point", r.URL.Path)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Welcome page to Assignments API")
+
+}
+
+
+
 
 
 func GetAssignments(w http.ResponseWriter, r *http.Request) {
@@ -69,10 +81,11 @@ func GetAssignment(w http.ResponseWriter, r *http.Request) {
 		if assignment.Id == params["id"]{
 			json.NewEncoder(w).Encode(assignment)
 			break
+		}else{
+			fmt.Fprintf(w, "Error: ID ivalid or does not exist") // response if there is no assignment with valid ID
 		}
 	}
-	//TODO : Provide a response if there is no such assignment
-	//w.Write(jsonResponse)
+	
 }
 
 func DeleteAssignment(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +100,7 @@ func DeleteAssignment(w http.ResponseWriter, r *http.Request) {
 	for index, assignment := range Assignments {
 			if assignment.Id == params["id"]{
 				Assignments = append(Assignments[:index], Assignments[index+1:]...)
-				response["status"] = "Success"
+				response["status"] = "Successfully Deleted item"
 				break
 			}
 	}
@@ -104,26 +117,48 @@ func UpdateAssignment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	
 	var response Response
+	var assignmnet Assignment
 	response.Assignments = Assignments
+	params := mux.Vars(r)
 
-
-
+	for index, assignment := range Assignments {
+		if assignment.Id == params["id"]{
+			fmt.Fprintf(w, "Got to requested ID\n")
+		Assignments = append(Assignments[:index], Assignments[index+1:]...) // deletes the identified assignment and updates it with the new information.
+			assignmnet.Id =  r.FormValue("id")
+			assignmnet.Title =  r.FormValue("title")
+			assignmnet.Description =  r.FormValue("desc")
+			assignmnet.Points, _ =  strconv.Atoi(r.FormValue("points"))
+		Assignments = append(Assignments, assignmnet)
+		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, "Created: Updated Assignment")
+			break
+		}else{
+			fmt.Fprintf(w, "Error: Didnt reach requested ID") // response if there is no assignment with valid ID
+		}
+	}
 }
 
 func CreateAssignment(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var assignmnet Assignment
 	r.ParseForm()
-	// Possible TODO: Better Error Checking!
-	// Possible TODO: Better Logging
-	if(r.FormValue("id") != ""){
+	for _, assignment := range Assignments {
+		if assignment.Id == r.FormValue("id"){ //checks for if the ids are the same 
+			fmt.Fprintf(w, "Error: Same ID detected, please rename and try again.")
+			break
+		}else if (r.FormValue("id") != ""){
 		assignmnet.Id =  r.FormValue("id")
 		assignmnet.Title =  r.FormValue("title")
 		assignmnet.Description =  r.FormValue("desc")
 		assignmnet.Points, _ =  strconv.Atoi(r.FormValue("points"))
 		Assignments = append(Assignments, assignmnet)
 		w.WriteHeader(http.StatusCreated)
+		fmt.Fprintf(w, "Created: New Assignment made")// message confirming that a new assignment was made 
 	}
+}
 	w.WriteHeader(http.StatusNotFound)
 
 }
+
+//option 2 enhancing the code in such a way that has better id checking and just error checking stuff

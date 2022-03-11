@@ -38,6 +38,10 @@ Extend {Lab3Dir}/main/main.go to use your new functionality
  Create/Update the README in the main directory to discuss HOW to use your program (provide example command-line usages)
 
  # Submission
+In order to use my program you must first build the main.go file 
+then run the following command:
+
+SHODAN_API_KEY=YOURAPIKEY ./main <searchterm> <startingpagenumber>
 
  ## Option 1 Preferred*
 * Update / Push Your Code to your github repo and 

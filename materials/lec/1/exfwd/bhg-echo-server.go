@@ -16,7 +16,7 @@ import (
 
 // echo is a handler function that simply echoes received data.
 func echo(conn net.Conn) {
-	defer conn.Close()
+	defer conn.Close() // dont close until end of funct
 
 	// Create a buffer to store received data.
 	b := make([]byte, 512)
@@ -39,11 +39,11 @@ func echo(conn net.Conn) {
 		// If we make it here - we got data!
 		log.Printf("Received %d bytes: %s\n", size, string(b))
 
-		c := make([]byte,size)
+		c := make([]byte,size)// send messages back in reverse order
 		for i := 0; i<size-1; i++{
 			c[i] = b[size-2-i]
 		}
-		c[size-1] = b[size-1]
+		c[size-1] = b[size-1] // keeping the end of line/file the same 
 
 		log.Printf("Writing data backward")
 
